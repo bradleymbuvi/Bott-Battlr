@@ -1,5 +1,5 @@
 import React from 'react'
-import BotCard from "../components/BotCard"
+import BotCard from "../components/BotCard.jsx"
 
 export default function YourBotArmy(props) {
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react"
-import BotCollection from './BotCollection'
-import BotArmy from './YourBotArmy'
-import BotSpecs from '../components/BotSpecs'
+import BotCollection from './BotCollection.jsx'
+import BotArmy from './YourBotArmy.jsx'
+import BotSpecs from '../components/BotSpecs.jsx'
 
 class BotsPage extends Component {
   state = {
@@ -15,8 +15,10 @@ class BotsPage extends Component {
   componentDidMount() {
     fetch('http://localhost:3000/bots')
       .then(response => response.json())
-      .then(bots => this.setState({ botCollection: bots, filteredCollection: bots }))
-      .then(console.log("Bots Fetched!"))
+      .then(bots => {
+        this.setState({ botCollection: bots, filteredCollection: bots })
+        console.log("Bots Fetched!")
+      })
   }
 
   addToArmy = (bot) => {
@@ -30,13 +32,7 @@ class BotsPage extends Component {
 
   removeFromArmy = (bot) => {
     const newArmy = this.state.botArmy.filter(card => card.id !== bot.id)
-    const armyClasses = newArmy.map(bot => bot.bot_class)
-    const newCollection = this.state.botCollection.filter(bot => {
-      console.log("Filter:", !armyClasses.includes(bot.bot_class))
-      return !armyClasses.includes(bot.bot_class)
-    })
-    console.log("newCollection", newCollection)
-
+    const newCollection = this.state.botCollection.filter(bot => !newArmy.some(armyBot => armyBot.bot_class === bot.bot_class))
     this.setState({ botArmy: newArmy, filteredCollection: newCollection })
   }
 
@@ -81,8 +77,8 @@ class BotsPage extends Component {
             enlist={this.addToArmy} />
         }
       </div>
-    )
+    );
   }
 }
 
-export default BotsPage
+export default BotsPage;
