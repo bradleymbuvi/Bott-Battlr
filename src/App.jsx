@@ -1,35 +1,42 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import BotCollection from './BotCollection';
+import YourBotArmy from './YourBotArmy';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [bots, setBots] = useState([]);
+  const [yourBotArmy, setYourBotArmy] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/bots')
+      .then(response => response.json())
+      .then(data => setBots(data));
+  }, []);
+
+  const enlistBot = (bot) => {
+    setYourBotArmy([...yourBotArmy, bot]);
+  };
+
+  const releaseBot = (botId) => {
+    setYourBotArmy(yourBotArmy.filter(bot => bot.id !== botId));
+  };
+
+  const deleteBot = (botId) => {
+    fetch(`http://localhost:3000/bots/${botId}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setBots(bots.filter(bot => bot.id !== botId));
+      setYourBotArmy(yourBotArmy.filter(bot => bot.id !== botId));
+    });
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>Bot Army Builder</h1>
+      <BotCollection bots={bots} enlistBot={enlistBot} />
+      <YourBotArmy yourBotArmy={yourBotArmy} releaseBot={releaseBot} deleteBot={deleteBot} />
+    </div>
+  );
 }
 
 export default App
